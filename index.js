@@ -1,34 +1,32 @@
-// document.body.style.backgroundColor = "red";
-// RECORDATORIO:
-// Posiciones de cartas random en cada juego DONE
-// tener un timer
-// mostrar intentos
-let colores=["red","blue","darkgreen","cyan","darkslateblue","indigo","saddlebrown","aliceblue","red","blue","darkgreen","cyan","darkslateblue","indigo","saddlebrown","aliceblue"];
-let cartasDisponibles= document.querySelectorAll(".card");
-let cartasClickeadas=[];
-let intentos=0;
-let tiempo;
-let botonInicio= document.getElementById("botonJugar");
+let colores,
+cartasDisponibles= document.querySelectorAll(".card"),
+cartasClickeadas=[],
+intentos=0,
+tiempo,
+intentosAcertados=0;
+botonInicio= document.getElementById("botonJugar");
+
 botonInicio.onclick= iniciarJuego;
 
 function iniciarJuego(){
+    colores=["red","blue","darkgreen","cyan","darkslateblue","indigo","saddlebrown","aliceblue","red","blue","darkgreen","cyan","darkslateblue","indigo","saddlebrown","aliceblue"];
+    intentosAcertados=0;
     clearInterval(tiempo);
     desabilitarBotonInicio();
-    let cartasDisponibles= document.querySelectorAll(".card");
-    asignarPosicionesAleatoriamente();
-    manejarRonda();
+    asignarPosicionesAleatoriamente(colores);
     iniciarTimer();
+    manejarRonda();
 };
 
-function asignarPosicionesAleatoriamente(){
+function asignarPosicionesAleatoriamente(colores){
     cartasDisponibles.forEach(function(nodoCarta){
-            let colorAleatorioIndice= colorAleatorioIndex();
+            let colorAleatorioIndice= colorAleatorioIndex(colores);
             asignarColor(colores[colorAleatorioIndice],nodoCarta);
             colores.splice(colorAleatorioIndice,1);
     })
 };
 
-function colorAleatorioIndex(){
+function colorAleatorioIndex(colores){
     return Math.floor(Math.random()*colores.length);
 };
 
@@ -37,15 +35,8 @@ function asignarColor(color, carta){
     carta.classList.add("oculto");
 };
 
-function manejarRonda(){
-    for(i=0;i<cartasDisponibles.length;i++){
-        
-        cartasDisponibles[i].addEventListener("click",evento=>manejarInput(evento));
-    }
-    // if(estanEliminados()){
-    //     terminarRonda();
-    //     return;
-    // }
+function manejarRonda(){  
+    cartasDisponibles.forEach(carta=>carta.addEventListener("click",manejarInput));
 };
 
 function manejarInput(evento){
@@ -58,7 +49,7 @@ function manejarInput(evento){
         carta.classList.remove("oculto")
         compararCartas();
     };
-    
+    setTimeout(verificarFin,1000)
 }
 
 function compararCartas(){
@@ -66,7 +57,8 @@ function compararCartas(){
     setTimeout(function(){
     if(cartasClickeadas[0].isEqualNode(cartasClickeadas[1]) && cartasClickeadas[0]!==cartasClickeadas[1]){
         cartasClickeadas.forEach(carta=>eliminar(carta));
-        liberarCartasClickeadas()
+        liberarCartasClickeadas();
+        aumentarAcertados();
     } else {
         cartasClickeadas.forEach(carta=>carta.classList.add("oculto"));
         liberarCartasClickeadas();
@@ -107,15 +99,6 @@ function terminarRonda(){
     restaurarClasesOriginalesCartas();
     botonInicio.onclick= iniciarJuego;
 }
-function estanEliminados(){
-    let valorInicial= true;
-    for(i=0; i<cartasDisponibles.length;i++){
-         if(!cartasDisponibles[i].classList.contains("eliminado")){
-             valorInicial=false;
-         }
-    }
-    return valorInicial; 
-}
 
 function desabilitarBotonInicio(){
     botonInicio.style.pointerEvents="none";
@@ -125,9 +108,13 @@ function habilitarBotonInicio(){
 };
 function restaurarClasesOriginalesCartas(){
     cartasDisponibles.forEach(carta=> carta.className = "col card");
-}
-function pasarRonda(){
-    aumentarIntentos();
-    enableInput();
-    manejarRonda();
+};
+function aumentarAcertados(){
+    intentosAcertados++;
+};
+function verificarFin(){
+    if(intentosAcertados===8){
+        terminarRonda();
+        return;
+    }
 }
