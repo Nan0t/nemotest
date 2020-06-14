@@ -66,9 +66,12 @@ function compararCartas(){
     aumentarIntentos();
     enableInput();
 }
-function eliminar(carta){
-    carta.classList.add("eliminado");
+function eliminar(elemento){
+    elemento.classList.add("eliminado");
 }
+function mostrar(elemento){
+    elemento.classList.remove("eliminado");
+};
 function liberarCartasClickeadas(){
     cartasClickeadas.pop();
     cartasClickeadas.pop();
@@ -97,7 +100,9 @@ function terminarRonda(){
     intentos =0;
     habilitarBotonInicio();
     restaurarClasesOriginalesCartas();
-    botonInicio.onclick= iniciarJuego;
+    botonInicio.onclick= function(){
+        iniciarJuego();
+        eliminar(document.getElementById("felicitacion"))};
 }
 
 function desabilitarBotonInicio(){
@@ -115,6 +120,7 @@ function aumentarAcertados(){
 function verificarFin(){
     if(intentosAcertados===8){
         terminarRonda();
+        mostrar(document.getElementById("felicitacion"))
         return;
     }
 }
