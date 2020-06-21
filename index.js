@@ -3,7 +3,8 @@ cartasDisponibles= document.querySelectorAll(".card"),
 cartasClickeadas=[],
 intentos=0,
 tiempo,
-intentosAcertados=0;
+intentosAcertados=0,
+vecesJugadas=0;
 botonInicio= document.getElementById("botonJugar");
 
 botonInicio.onclick= iniciarJuego;
@@ -15,7 +16,10 @@ function iniciarJuego(){
     desabilitarBotonInicio();
     asignarPosicionesAleatoriamente(colores);
     iniciarTimer();
-    manejarRonda();
+    if(vecesJugadas===0){
+        vecesJugadas++;
+        manejarRonda();
+    }
 };
 
 function asignarPosicionesAleatoriamente(colores){
@@ -36,11 +40,17 @@ function asignarColor(color, carta){
 };
 
 function manejarRonda(){  
-    cartasDisponibles.forEach(carta=>carta.addEventListener("click",manejarInput));
+    let evento= document.getElementById("tablero");
+    evento.addEventListener("click", function(event){
+        let elemento=  event.target;
+        if(elemento.classList.contains("card")){
+            manejarInput(elemento);
+        }
+    })
 };
 
-function manejarInput(evento){
-    let carta= evento.target;
+function manejarInput(elemento){
+    let carta= elemento;
     if(cartasClickeadas.length<1){
     cartasClickeadas.push(carta);
     carta.classList.remove("oculto")
